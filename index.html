@@ -14,6 +14,8 @@
 
     var ball; 
     var paddle;
+    var leftKey, rightKey;
+    const paddleSpeed = 5;
 
 
     function preload() {
@@ -46,10 +48,20 @@
         paddle.anchor.set(0.5,1);
         game.physics.enable(paddle, Phaser.Physics.ARCADE);
         paddle.body.immovable = true;
+
+
+        leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     }
     function update() {
         game.physics.arcade.collide(ball, paddle);
-        paddle.x = game.input.x || game.world.width*0.5;
+
+        if(rightKey.isDown) {
+            paddle.x+= paddleSpeed;
+        } 
+        else if(leftKey.isDown) {
+            paddle.x-= paddleSpeed;
+        }
     }
 </script>
 </body>
