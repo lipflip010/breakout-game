@@ -15,7 +15,10 @@
     var ball; 
     var paddle;
     var leftKey, rightKey;
+    var bricks, newBrick, brickInfo;
+
     const paddleSpeed = 5;
+    const assets = ['ball', 'paddle']
 
 
     function preload() {
@@ -24,32 +27,17 @@
         game.scale.pageAlignVertically = true;
         game.stage.backgroundColor = '#F0E68C';
 
-        game.load.image('ball', 'assets/ball.png');
-        game.load.image('paddle', 'assets/paddle.png');
+        assets.forEach((asset) => {
+            game.load.image(asset, 'assets/'+asset+'.png');
+        })
     }
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
-        ball.anchor.set(0.5);
-        game.physics.enable(ball, Phaser.Physics.ARCADE);
-        ball.body.collideWorldBounds = true;
-        ball.body.bounce.set(1);
-        ball.body.velocity.set(150,-150);
-
+        createBall();
+        createPaddle();
+        
+        
         game.physics.arcade.checkCollision.down = false;
-        ball.checkWorldBounds = true;
-        ball.events.onOutOfBounds.add(() => {
-            alert('Game over :(');
-            location.reload();
-        })
-
-        paddle = game.add.sprite(game.world.width*0.6, game.world.height-5, 'paddle');
-        paddle.anchor.set(0.5,1);
-        game.physics.enable(paddle, Phaser.Physics.ARCADE);
-        paddle.body.immovable = true;
-
-
         leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     }
@@ -63,6 +51,30 @@
             paddle.x-= paddleSpeed;
         }
     }
+
+    function createBall() {
+        ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
+        ball.anchor.set(0.5);
+        game.physics.enable(ball, Phaser.Physics.ARCADE);
+        ball.body.collideWorldBounds = true;
+        ball.body.bounce.set(1);
+        ball.body.velocity.set(150,-150);
+
+        ball.checkWorldBounds = true;
+        ball.events.onOutOfBounds.add(() => {
+            alert('Game over :(');
+            location.reload();
+        });
+    }
+
+    function createPaddle() {
+        paddle = game.add.sprite(game.world.width*0.6, game.world.height-5, 'paddle');
+        paddle.anchor.set(0.5,1);
+        game.physics.enable(paddle, Phaser.Physics.ARCADE);
+        paddle.body.immovable = true;
+    }
+
+
 </script>
 </body>
 </html>
