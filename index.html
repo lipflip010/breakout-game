@@ -18,7 +18,7 @@
     var bricks, newBrick, brickInfo;
 
     const paddleSpeed = 5;
-    const assets = ['ball', 'paddle']
+    const assets = ['ball', 'paddle', 'brick']
 
 
     function preload() {
@@ -33,8 +33,10 @@
     }
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        createBall();
-        createPaddle();
+        initBall();
+        initPaddle();
+        initBricks();
+
         
         
         game.physics.arcade.checkCollision.down = false;
@@ -43,6 +45,8 @@
     }
     function update() {
         game.physics.arcade.collide(ball, paddle);
+        
+        game.physics.arcade.collide(ball, bricks, onHitBrick);
 
         if(rightKey.isDown) {
             paddle.x+= paddleSpeed;
@@ -52,7 +56,7 @@
         }
     }
 
-    function createBall() {
+    function initBall() {
         ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
         ball.anchor.set(0.5);
         game.physics.enable(ball, Phaser.Physics.ARCADE);
@@ -67,13 +71,44 @@
         });
     }
 
-    function createPaddle() {
+    function initPaddle() {
         paddle = game.add.sprite(game.world.width*0.6, game.world.height-5, 'paddle');
         paddle.anchor.set(0.5,1);
         game.physics.enable(paddle, Phaser.Physics.ARCADE);
         paddle.body.immovable = true;
     }
 
+    function initBricks() {
+        brickInfo = {
+            width: 50,
+            height: 20,
+            count: {
+                row: 3,
+                col: 7
+            },
+            offset: {
+                top: 20,
+                left: 60
+            },
+            padding: 10
+        }
+        bricks = game.add.group();
+        for(c=0; c<brickInfo.count.col; c++) {
+            for(r=0; r<brickInfo.count.row; r++) {
+                var brickX = (c*(brickInfo.width+brickInfo.padding))+brickInfo.offset.left;
+                var brickY = (r*(brickInfo.height+brickInfo.padding))+brickInfo.offset.top;
+                newBrick = game.add.sprite(brickX, brickY, 'brick');
+                game.physics.enable(newBrick, Phaser.Physics.ARCADE);
+                newBrick.body.immovable = true;
+                newBrick.anchor.set(0.5);
+                bricks.add(newBrick);
+            }                
+        }
+    }
+     
+    function onHitBrick(ball,brick) {
+        brick.kill();
+    }
 
 </script>
 </body>
