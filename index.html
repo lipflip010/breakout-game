@@ -16,9 +16,31 @@
     var paddle;
     var leftKey, rightKey;
     var bricks, newBrick, brickInfo;
+    var scoreText;
+    var score = 0;
+
+    const textStyle = { font: '18px Arial', fill: '#0095DD' };
+    var lives = 3;
+    var livesText;
+    var lifeLostText;
 
     const paddleSpeed = 5;
     const assets = ['ball', 'paddle', 'brick']
+
+    var brickInfo = {
+            width: 50,
+            height: 20,
+            count: {
+                row: 3,
+                col: 7
+            },
+            offset: {
+                top: 50,
+                left: 60
+            },
+            padding: 10,
+            remainingBricks: 21
+        }
 
 
     function preload() {
@@ -36,6 +58,12 @@
         initBall();
         initPaddle();
         initBricks();
+        scoreText = game.add.text(5, 5, 'Points: 0', textStyle);
+        livesText = game.add.text(game.world.width-5, 5, 'Lives: '+lives, textStyle);
+        livesText.anchor.set(1,0);
+        lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Life lost, click to continue', textStyle);
+        lifeLostText.anchor.set(0.5);
+        lifeLostText.visible = false;
 
         
         
@@ -65,10 +93,7 @@
         ball.body.velocity.set(150,-150);
 
         ball.checkWorldBounds = true;
-        ball.events.onOutOfBounds.add(() => {
-            alert('Game over :(');
-            location.reload();
-        });
+        ball.events.onOutOfBounds.add(ballLeavesScreen, this);
     }
 
     function initPaddle() {
@@ -79,20 +104,7 @@
     }
 
     function initBricks() {
-        brickInfo = {
-            width: 50,
-            height: 20,
-            count: {
-                row: 3,
-                col: 7
-            },
-            offset: {
-                top: 20,
-                left: 60
-            },
-            padding: 10
-        }
-        bricks = game.add.group();
+                bricks = game.add.group();
         for(c=0; c<brickInfo.count.col; c++) {
             for(r=0; r<brickInfo.count.row; r++) {
                 var brickX = (c*(brickInfo.width+brickInfo.padding))+brickInfo.offset.left;
@@ -108,6 +120,33 @@
      
     function onHitBrick(ball,brick) {
         brick.kill();
+        score += 10;
+        scoreText.setText('Punkte: '+score);
+
+        brickInfo.remainingBricks--;
+        if(brickInfo.remainingBricks === 0) {
+            alert('You won the game, congratulations!');
+            location.reload();
+        }
+    }
+
+    function ballLeavesScreen() {
+        lives--;
+
+        if(lives>0) {
+            livesText.setText('Lives: '+lives);
+            lifeLostText.visible = true;
+            ball.reset(game.world.width*0.5, game.world.height-25);
+            paddle.reset(game.world.width*0.5, game.world.height-5);
+
+            game.input.onDown.addOnce(() => {
+                lifeLostText.visible = false;
+                ball.body.velocity.set(150,-150);
+            });
+        } else {
+            alert("Game over :(");
+            location.reload();
+        }
     }
 
 </script>
