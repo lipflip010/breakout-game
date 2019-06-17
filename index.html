@@ -8,6 +8,8 @@
 </head>
 <body>
 <script>
+    import * as Phaser from "./js/phaser.min";
+
     var game = new Phaser.Game(480, 320, Phaser.CANVAS, null, {
       preload: preload, create: create, update: update
     });
@@ -27,7 +29,7 @@
     const paddleSpeed = 5;
     const assets = ['ball', 'paddle', 'brick']
 
-    var brickInfo = {
+    brickInfo = {
             width: 50,
             height: 20,
             count: {
@@ -40,7 +42,7 @@
             },
             padding: 10,
             remainingBricks: 21
-        }
+        };
 
 
     function preload() {
@@ -51,7 +53,7 @@
 
         assets.forEach((asset) => {
             game.load.image(asset, 'assets/'+asset+'.png');
-        })
+        });
         game.load.spritesheet('ball', 'assets/wobble.png', 20, 20);
     }
     function create() {
