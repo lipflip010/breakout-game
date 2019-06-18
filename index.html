@@ -23,6 +23,9 @@
     var scoreText;
     var score = 0;
 
+    var playing = false;
+    var startButton;
+
     const textStyle = {font: '18px Arial', fill: '#0095DD'};
     var lives = 3;
     var livesText;
@@ -63,15 +66,15 @@
         game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
-        game.stage.backgroundColor = '#F0E68C';
+        game.stage.backgroundColor = '#EEEEEE';
 
         images.forEach((image) => {
             game.load.image(image, ASSET_DIR + image + '.png');
         });
 
         spriteSheets.forEach((spriteSheet) => {
-            game.load.spritesheet(spriteSheet.name, ASSET_DIR + spriteSheet.name + '.png', spriteSheet.width, spriteSheet.heigth);
-        })
+            game.load.spritesheet(spriteSheet.name, ASSET_DIR + spriteSheet.name + '.png', spriteSheet.width, spriteSheet.height);
+        });
     }
 
     function create() {
@@ -90,6 +93,8 @@
         game.physics.arcade.checkCollision.down = false;
         leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        startButton = game.add.button(game.world.width * 0.5, game.world.height * 0.5, 'button', startGame, this, 1, 0, 2);
+        startButton.anchor.set(0.5);
     }
 
     function update() {
@@ -97,10 +102,12 @@
 
         game.physics.arcade.collide(ball, bricks, onHitBrick);
 
-        if (rightKey.isDown) {
-            paddle.x += paddleSpeed;
-        } else if (leftKey.isDown) {
-            paddle.x -= paddleSpeed;
+        if (playing) {
+            if (rightKey.isDown) {
+                paddle.x += paddleSpeed;
+            } else if (leftKey.isDown) {
+                paddle.x -= paddleSpeed;
+            }
         }
     }
 
@@ -111,14 +118,13 @@
         game.physics.enable(ball, Phaser.Physics.ARCADE);
         ball.body.collideWorldBounds = true;
         ball.body.bounce.set(1);
-        ball.body.velocity.set(150, -150);
 
         ball.checkWorldBounds = true;
         ball.events.onOutOfBounds.add(ballLeavesScreen, this);
     }
 
     function initPaddle() {
-        paddle = game.add.sprite(game.world.width * 0.6, game.world.height - 5, 'paddle');
+        paddle = game.add.sprite(game.world.width * 0.5, game.world.height - 5, 'paddle');
         paddle.anchor.set(0.5, 1);
         game.physics.enable(paddle, Phaser.Physics.ARCADE);
         paddle.body.immovable = true;
@@ -168,10 +174,12 @@
             lifeLostText.visible = true;
             ball.reset(game.world.width * 0.5, game.world.height - 25);
             paddle.reset(game.world.width * 0.5, game.world.height - 5);
+            playing = false;
 
             game.input.onDown.addOnce(() => {
                 lifeLostText.visible = false;
                 ball.body.velocity.set(150, -150);
+                playing = true;
             });
         } else {
             alert("Game over :(");
@@ -179,6 +187,11 @@
         }
     }
 
+    function startGame() {
+        startButton.destroy();
+        ball.body.velocity.set(150, -150);
+        playing = true;
+    }
 </script>
 </body>
 </html>
