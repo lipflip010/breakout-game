@@ -8,13 +8,12 @@
 </head>
 <body>
 <script>
-    import * as Phaser from "./js/phaser.min";
 
     var game = new Phaser.Game(480, 320, Phaser.CANVAS, null, {
       preload: preload, create: create, update: update
     });
 
-    var ball; 
+    var ball;
     var paddle;
     var leftKey, rightKey;
     var bricks, newBrick, brickInfo;
@@ -27,9 +26,21 @@
     var lifeLostText;
 
     const paddleSpeed = 5;
-    const assets = ['ball', 'paddle', 'brick']
+    const images = ['ball', 'paddle', 'brick'];
+    const spriteSheets = [
+        {
+            name: 'wobble',
+            width: 20,
+            height: 20
+        }, {
+            name: 'button',
+            width: 120,
+            height: 40
+        }];
 
-    brickInfo = {
+    const ASSET_DIR = 'assets/';
+
+    var brickInfo = {
             width: 50,
             height: 20,
             count: {
@@ -51,10 +62,13 @@
         game.scale.pageAlignVertically = true;
         game.stage.backgroundColor = '#F0E68C';
 
-        assets.forEach((asset) => {
-            game.load.image(asset, 'assets/'+asset+'.png');
+        images.forEach((image) => {
+            game.load.image(image, ASSET_DIR+image+'.png');
         });
-        game.load.spritesheet('ball', 'assets/wobble.png', 20, 20);
+
+        spriteSheets.forEach((spriteSheet) => {
+            game.load.spritesheet(spriteSheet.name, ASSET_DIR+spriteSheet.name+'.png', spriteSheet.width,spriteSheet.heigth);
+        })
     }
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -68,20 +82,20 @@
         lifeLostText.anchor.set(0.5);
         lifeLostText.visible = false;
 
-        
-        
+
+
         game.physics.arcade.checkCollision.down = false;
         leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     }
     function update() {
         game.physics.arcade.collide(ball, paddle, onHitPaddle);
-        
+
         game.physics.arcade.collide(ball, bricks, onHitBrick);
 
         if(rightKey.isDown) {
             paddle.x+= paddleSpeed;
-        } 
+        }
         else if(leftKey.isDown) {
             paddle.x-= paddleSpeed;
         }
@@ -118,10 +132,10 @@
                 newBrick.body.immovable = true;
                 newBrick.anchor.set(0.5);
                 bricks.add(newBrick);
-            }                
+            }
         }
     }
-     
+
     function onHitBrick(ball,brick) {
         var killTween = game.add.tween(brick.scale);
         killTween.to({x:0,y:0}, 200, Phaser.Easing.Linear.None);
