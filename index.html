@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Gamedev Phaser Workshop - lesson 01: Initialize the framework</title>
-    <style>* { padding: 0; margin: 0; }</style>
+    <style>* {
+        padding: 0;
+        margin: 0;
+    }</style>
     <script src="js/phaser.min.js"></script>
 </head>
 <body>
 <script>
 
     var game = new Phaser.Game(480, 320, Phaser.CANVAS, null, {
-      preload: preload, create: create, update: update
+        preload: preload, create: create, update: update
     });
 
     var ball;
@@ -20,7 +23,7 @@
     var scoreText;
     var score = 0;
 
-    const textStyle = { font: '18px Arial', fill: '#0095DD' };
+    const textStyle = {font: '18px Arial', fill: '#0095DD'};
     var lives = 3;
     var livesText;
     var lifeLostText;
@@ -41,19 +44,19 @@
     const ASSET_DIR = 'assets/';
 
     var brickInfo = {
-            width: 50,
-            height: 20,
-            count: {
-                row: 3,
-                col: 7
-            },
-            offset: {
-                top: 50,
-                left: 60
-            },
-            padding: 10,
-            remainingBricks: 21
-        };
+        width: 50,
+        height: 20,
+        count: {
+            row: 3,
+            col: 7
+        },
+        offset: {
+            top: 50,
+            left: 60
+        },
+        padding: 10,
+        remainingBricks: 21
+    };
 
 
     function preload() {
@@ -63,70 +66,70 @@
         game.stage.backgroundColor = '#F0E68C';
 
         images.forEach((image) => {
-            game.load.image(image, ASSET_DIR+image+'.png');
+            game.load.image(image, ASSET_DIR + image + '.png');
         });
 
         spriteSheets.forEach((spriteSheet) => {
-            game.load.spritesheet(spriteSheet.name, ASSET_DIR+spriteSheet.name+'.png', spriteSheet.width,spriteSheet.heigth);
+            game.load.spritesheet(spriteSheet.name, ASSET_DIR + spriteSheet.name + '.png', spriteSheet.width, spriteSheet.heigth);
         })
     }
+
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         initBall();
         initPaddle();
         initBricks();
         scoreText = game.add.text(5, 5, 'Points: 0', textStyle);
-        livesText = game.add.text(game.world.width-5, 5, 'Lives: '+lives, textStyle);
-        livesText.anchor.set(1,0);
-        lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Life lost, click to continue', textStyle);
+        livesText = game.add.text(game.world.width - 5, 5, 'Lives: ' + lives, textStyle);
+        livesText.anchor.set(1, 0);
+        lifeLostText = game.add.text(game.world.width * 0.5, game.world.height * 0.5, 'Life lost, click to continue', textStyle);
         lifeLostText.anchor.set(0.5);
         lifeLostText.visible = false;
-
 
 
         game.physics.arcade.checkCollision.down = false;
         leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     }
+
     function update() {
         game.physics.arcade.collide(ball, paddle, onHitPaddle);
 
         game.physics.arcade.collide(ball, bricks, onHitBrick);
 
-        if(rightKey.isDown) {
-            paddle.x+= paddleSpeed;
-        }
-        else if(leftKey.isDown) {
-            paddle.x-= paddleSpeed;
+        if (rightKey.isDown) {
+            paddle.x += paddleSpeed;
+        } else if (leftKey.isDown) {
+            paddle.x -= paddleSpeed;
         }
     }
 
     function initBall() {
-        ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
-        ball.animations.add('wobble', [0,1,0,2,0,1,0,2,0], 24);
+        ball = game.add.sprite(game.world.width * 0.5, game.world.height - 25, 'ball');
+        ball.animations.add('wobble', [0, 1, 0, 2, 0, 1, 0, 2, 0], 24);
         ball.anchor.set(0.5);
         game.physics.enable(ball, Phaser.Physics.ARCADE);
         ball.body.collideWorldBounds = true;
         ball.body.bounce.set(1);
-        ball.body.velocity.set(150,-150);
+        ball.body.velocity.set(150, -150);
 
         ball.checkWorldBounds = true;
         ball.events.onOutOfBounds.add(ballLeavesScreen, this);
     }
 
     function initPaddle() {
-        paddle = game.add.sprite(game.world.width*0.6, game.world.height-5, 'paddle');
-        paddle.anchor.set(0.5,1);
+        paddle = game.add.sprite(game.world.width * 0.6, game.world.height - 5, 'paddle');
+        paddle.anchor.set(0.5, 1);
         game.physics.enable(paddle, Phaser.Physics.ARCADE);
         paddle.body.immovable = true;
     }
 
     function initBricks() {
-                bricks = game.add.group();
-        for(c=0; c<brickInfo.count.col; c++) {
-            for(r=0; r<brickInfo.count.row; r++) {
-                var brickX = (c*(brickInfo.width+brickInfo.padding))+brickInfo.offset.left;
-                var brickY = (r*(brickInfo.height+brickInfo.padding))+brickInfo.offset.top;
+        bricks = game.add.group();
+        for (c = 0; c < brickInfo.count.col; c++) {
+            for (r = 0; r < brickInfo.count.row; r++) {
+                var brickX = (c * (brickInfo.width + brickInfo.padding)) + brickInfo.offset.left;
+                var brickY = (r * (brickInfo.height + brickInfo.padding)) + brickInfo.offset.top;
                 newBrick = game.add.sprite(brickX, brickY, 'brick');
                 game.physics.enable(newBrick, Phaser.Physics.ARCADE);
                 newBrick.body.immovable = true;
@@ -136,18 +139,18 @@
         }
     }
 
-    function onHitBrick(ball,brick) {
+    function onHitBrick(ball, brick) {
         var killTween = game.add.tween(brick.scale);
-        killTween.to({x:0,y:0}, 200, Phaser.Easing.Linear.None);
-        killTween.onComplete.addOnce(function(){
+        killTween.to({x: 0, y: 0}, 200, Phaser.Easing.Linear.None);
+        killTween.onComplete.addOnce(function () {
             brick.kill();
         }, this);
         killTween.start();
         score += 10;
-        scoreText.setText('Punkte: '+score);
+        scoreText.setText('Punkte: ' + score);
 
         brickInfo.remainingBricks--;
-        if(brickInfo.remainingBricks === 0) {
+        if (brickInfo.remainingBricks === 0) {
             alert('You won the game, congratulations!');
             location.reload();
         }
@@ -160,15 +163,15 @@
     function ballLeavesScreen() {
         lives--;
 
-        if(lives>0) {
-            livesText.setText('Lives: '+lives);
+        if (lives > 0) {
+            livesText.setText('Lives: ' + lives);
             lifeLostText.visible = true;
-            ball.reset(game.world.width*0.5, game.world.height-25);
-            paddle.reset(game.world.width*0.5, game.world.height-5);
+            ball.reset(game.world.width * 0.5, game.world.height - 25);
+            paddle.reset(game.world.width * 0.5, game.world.height - 5);
 
             game.input.onDown.addOnce(() => {
                 lifeLostText.visible = false;
-                ball.body.velocity.set(150,-150);
+                ball.body.velocity.set(150, -150);
             });
         } else {
             alert("Game over :(");
